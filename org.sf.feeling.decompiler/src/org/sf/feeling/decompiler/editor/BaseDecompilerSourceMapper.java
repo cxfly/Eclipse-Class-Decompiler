@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
+import org.eclipse.jdt.internal.core.NamedMember;
 import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.jdt.internal.core.SourceMapper;
 import org.eclipse.jdt.internal.ui.javaeditor.IClassFileEditorInput;
@@ -39,6 +40,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 		super( sourcePath, rootPath, options );
 	}
 
+	@Override
 	public char[] findSource( IType type, IBinaryType info )
 	{
 		IPreferenceStore prefs = JavaDecompilerPlugin.getDefault( )
@@ -147,9 +149,13 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 			}
 		}
 
-		String code = JavaDecompilerClassFileEditor.MARK
-				+ "\r\n" //$NON-NLS-1$
-				+ usedDecompiler.getSource( );
+		// String code = JavaDecompilerClassFileEditor.MARK
+		// + "\r\n" //$NON-NLS-1$
+		// + usedDecompiler.getSource( );
+		StringBuffer buf = new StringBuffer(
+				JavaDecompilerClassFileEditor.MARK );
+		buf.append( "\r\n" ).append( usedDecompiler.getSource( ) );
+		String code = buf.toString( );
 
 		boolean showReport = prefs
 				.getBoolean( JavaDecompilerPlugin.PREF_DISPLAY_METADATA );
@@ -168,7 +174,8 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 			if ( showReport )
 				code = usedDecompiler.removeComment( code );
 			DecompilerOutputUtil decompilerOutputUtil = new DecompilerOutputUtil(
-					usedDecompiler.getDecompilerType( ), code );
+					usedDecompiler.getDecompilerType( ),
+					code );
 			code = decompilerOutputUtil.realign( );
 		}
 
@@ -189,10 +196,8 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 							.substring( fullName.lastIndexOf( className ) );
 				}
 
-				code = SortMemberUtil.sortMember(
-						type.getPackageFragment( ).getElementName( ),
-						className,
-						code );
+				code = SortMemberUtil.sortMember( type.getPackageFragment( )
+						.getElementName( ), className, code );
 			}
 
 			source.append( formatSource( code ) );
@@ -212,7 +217,8 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 
 		if ( originalSourceMapper.containsKey( root ) )
 		{
-			( (SourceMapper) originalSourceMapper.get( root ) ).mapSource( type,
+			( (SourceMapper) originalSourceMapper.get( root ) ).mapSource(
+					(NamedMember) type,
 					source.toString( ).toCharArray( ),
 					null );
 		}
@@ -241,8 +247,9 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 	{
 		IDecompiler result = decompiler;
 
-		String pkg = type.getPackageFragment( ).getElementName( ).replace( '.',
-				'/' );
+		String pkg = type.getPackageFragment( )
+				.getElementName( )
+				.replace( '.', '/' );
 
 		Boolean displayNumber = null;
 		if ( UIUtil.isDebugPerspective( )
@@ -295,12 +302,9 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 								origionalDecompiler,
 								new File( classLocation ) );
 					}
-					result.decompile(
-							root.getUnderlyingResource( )
-									.getLocation( )
-									.toOSString( ),
-							pkg,
-							className );
+					result.decompile( root.getUnderlyingResource( )
+							.getLocation( )
+							.toOSString( ), pkg, className );
 				}
 				catch ( JavaModelException e )
 				{
@@ -321,6 +325,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 		return result;
 	}
 
+	@Override
 	public String decompile( String decompilerType, File file )
 	{
 		IPreferenceStore prefs = JavaDecompilerPlugin.getDefault( )
@@ -353,9 +358,13 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 				|| currentDecompiler.getSource( ).length( ) == 0 )
 			return null;
 
-		String code = JavaDecompilerClassFileEditor.MARK
-				+ "\r\n" //$NON-NLS-1$
-				+ currentDecompiler.getSource( );
+		// String code = JavaDecompilerClassFileEditor.MARK
+		// + "\r\n" //$NON-NLS-1$
+		// + currentDecompiler.getSource( );
+		StringBuffer buf = new StringBuffer(
+				JavaDecompilerClassFileEditor.MARK );
+		buf.append( "\r\n" ).append( currentDecompiler.getSource( ) );
+		String code = buf.toString( );
 
 		boolean showReport = prefs
 				.getBoolean( JavaDecompilerPlugin.PREF_DISPLAY_METADATA );
@@ -374,7 +383,8 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper
 			if ( showReport )
 				code = currentDecompiler.removeComment( code );
 			DecompilerOutputUtil decompilerOutputUtil = new DecompilerOutputUtil(
-					currentDecompiler.getDecompilerType( ), code );
+					currentDecompiler.getDecompilerType( ),
+					code );
 			code = decompilerOutputUtil.realign( );
 		}
 

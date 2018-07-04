@@ -89,7 +89,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="0" maxOccurs="1">
-            <element ref="enablement"/>
+            <!--<element ref="enablement"/> -->
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>

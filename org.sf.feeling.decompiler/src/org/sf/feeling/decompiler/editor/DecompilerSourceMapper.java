@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import org.eclipse.jdt.internal.core.BinaryType;
+import org.eclipse.jdt.internal.core.NamedMember;
 import org.eclipse.jdt.internal.core.SourceMapper;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -83,7 +84,7 @@ public abstract class DecompilerSourceMapper extends SourceMapper
 		{
 			sourceRanges.remove( type );
 		}
-		super.mapSource( type, contents, null );
+		super.mapSource( (NamedMember) type, contents, null );
 	}
 
 	/**
@@ -102,12 +103,14 @@ public abstract class DecompilerSourceMapper extends SourceMapper
 
 		IPreferenceStore prefs = JavaDecompilerPlugin.getDefault( )
 				.getPreferenceStore( );
-		boolean useFormatter = prefs.getBoolean( JavaDecompilerPlugin.USE_ECLIPSE_FORMATTER );
+		boolean useFormatter = prefs
+				.getBoolean( JavaDecompilerPlugin.USE_ECLIPSE_FORMATTER );
 
 		if ( source != null && useFormatter )
 		{
 			CodeFormatter formatter = ToolFactory.createCodeFormatter( null );
-			TextEdit textEdit = formatter.format( CodeFormatter.K_COMPILATION_UNIT,
+			TextEdit textEdit = formatter.format(
+					CodeFormatter.K_COMPILATION_UNIT,
 					source,
 					0,
 					source.length( ),
@@ -168,9 +171,10 @@ public abstract class DecompilerSourceMapper extends SourceMapper
 	}
 
 	/**
-	 * Finds the deepest <code>IJavaElement</code> in the hierarchy of <code>elt</elt>'s children (including <code>elt</code>
-	 * itself) which has a source range that encloses <code>position</code>
-	 * according to <code>mapper</code>.
+	 * Finds the deepest <code>IJavaElement</code> in the hierarchy of
+	 * <code>elt</elt>'s children (including <code>elt</code> itself) which has
+	 * a source range that encloses <code>position</code> according to
+	 * <code>mapper</code>.
 	 * 
 	 * Code mostly taken from 'org.eclipse.jdt.internal.core.ClassFile'
 	 */
